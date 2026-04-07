@@ -26,7 +26,7 @@
 
 ---
 
-In June 2025, Andrej Karpathy published an [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with a brilliantly simple insight:
+In April 2026, Andrej Karpathy published an [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with a brilliantly simple insight:
 
 > **RAG re-derives answers every time. A Wiki compiles knowledge once and reuses it forever.**
 
