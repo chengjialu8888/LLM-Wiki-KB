@@ -8,7 +8,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.7+](https://img.shields.io/badge/Python-3.7+-green.svg)](https://python.org)
-[![Tests](https://img.shields.io/badge/Tests-35%2F35%20Passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-35%2F35%20Passing-brightgreen.svg)](#-testing)
 
 </div>
 
@@ -149,47 +149,296 @@ Karpathy's Gist is a **design document**, not a **runnable system**. It describe
 
 ---
 
-## ⚡ 快速开始 · Quick Start
+## 📖 分平台使用指南 · Step-by-Step Usage by Platform
 
-### 1. 初始化 Wiki · Initialize
+> 以下指南假设你已经 `git clone` 了本仓库。下文用 `<skill-path>` 指代 clone 下来的 `llm-wiki-kb/` 目录。
+>
+> The guides below assume you've cloned this repo. `<skill-path>` refers to the cloned `llm-wiki-kb/` directory.
 
-```bash
-python scripts/wiki_init.py --vault ~/my-wiki
-```
+---
 
-### 2. 导入素材 · Ingest Sources
+### 🟣 Claude Code
 
-```bash
-# 导入 URL
-python scripts/wiki_ingest.py --vault ~/my-wiki --url https://example.com/article
+Claude Code 是目前与本 Skill 最自然的搭配——它原生读取 `CLAUDE.md`，能直接读写本地文件系统，且可运行 Python 脚本。
 
-# 批量导入目录
-python scripts/wiki_ingest.py --vault ~/my-wiki --dir ~/papers/
-```
+Claude Code is the most natural pairing — it natively reads `CLAUDE.md`, has direct filesystem access, and runs Python scripts.
 
-### 3. 让 LLM 编译 · Let LLM Compile
-
-将 `SKILL.md` 提供给你的 LLM Agent，它会自动：
-- 阅读 `raw/` 中的素材
-- 按模板创建 Wiki 页面
-- 更新 `index.md` 和 `log.md`
-- 建立 `[[wikilinks]]` 交叉引用
-
-### 4. 搜索与查询 · Search & Query
+#### Step 1: Clone 并设置环境变量 · Clone & Set Env
 
 ```bash
-# 搜索（自动选择最佳引擎）
-python scripts/wiki_search.py --vault ~/my-wiki --query "transformer attention"
+git clone https://github.com/chengjialu8888/LLM-Wiki-KB.git
+cd LLM-Wiki-KB
 
-# 带格式的查询
-python scripts/wiki_query.py --vault ~/my-wiki --query "对比 RNN 和 Transformer" --format marp
+# 设置你的 Obsidian vault 路径（也可以新建一个）
+export WIKI_VAULT=~/obsidian-vaults/my-research
 ```
 
-### 5. 健康检查 · Health Check
+#### Step 2: 初始化 Wiki · Initialize
 
 ```bash
-python scripts/wiki_lint.py --vault ~/my-wiki
+python scripts/wiki_init.py $WIKI_VAULT --domain "你的研究领域"
 ```
+
+这会在 `$WIKI_VAULT` 下创建完整的目录结构和 `SCHEMA.md`。
+
+#### Step 3: 部署 Schema 到 Claude Code · Deploy Schema
+
+```bash
+# 将 schema 复制为 CLAUDE.md（Claude Code 自动读取此文件作为项目上下文）
+cp $WIKI_VAULT/SCHEMA.md $WIKI_VAULT/CLAUDE.md
+```
+
+#### Step 4:（可选）配置 qmd 搜索引擎 · Optional: Configure qmd Search
+
+如果你安装了 [qmd](https://github.com/tobi/qmd)，可以配置为 MCP 工具获得更强的混合搜索能力：
+
+```bash
+# 安装 qmd
+go install github.com/tobi/qmd@latest
+
+# 在项目根目录创建 .mcp.json
+cat > $WIKI_VAULT/.mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "qmd": {
+      "command": "qmd",
+      "args": ["serve", "--dir", "wiki/"]
+    }
+  }
+}
+EOF
+```
+
+没有 qmd 也完全没问题——系统会自动回退到 index.md 解析 + grep 搜索。
+
+#### Step 5: 在 Claude Code 中使用 · Start Using
+
+打开 Claude Code，进入 vault 目录，然后直接用自然语言指挥：
+
+```bash
+cd $WIKI_VAULT
+claude  # 启动 Claude Code
+```
+
+**导入素材：**
+```
+> 把这篇文章加入我的知识库：https://lilianweng.github.io/posts/2023-06-23-agent/
+```
+
+**查询知识：**
+```
+> 我的知识库里关于 LLM Agent 架构有哪些研究？帮我做一个综合分析
+```
+
+**生成幻灯片：**
+```
+> 把 scaling laws 的相关内容整理成一份 Marp 幻灯片
+```
+
+**健康检查：**
+```
+> 检查一下 wiki 有没有死链接或孤儿页面
+```
+
+Claude Code 会自动阅读 `CLAUDE.md`，理解整个 wiki 的约定，执行相应的 Python 脚本，并维护 `index.md`、`log.md` 和 `[[wikilinks]]`。
+
+---
+
+### 🟢 OpenCode / Codex / 其他 OpenAI 系 Agent
+
+OpenCode 和 Codex 使用 `AGENTS.md` 作为项目指令文件，工作流与 Claude Code 类似。
+
+OpenCode and Codex use `AGENTS.md` as the project instruction file. The workflow is similar to Claude Code.
+
+#### Step 1: Clone 并设置环境 · Clone & Setup
+
+```bash
+git clone https://github.com/chengjialu8888/LLM-Wiki-KB.git
+cd LLM-Wiki-KB
+export WIKI_VAULT=~/obsidian-vaults/my-research
+```
+
+#### Step 2: 初始化并部署 Schema · Initialize & Deploy
+
+```bash
+python scripts/wiki_init.py $WIKI_VAULT --domain "你的研究领域"
+
+# 复制为 AGENTS.md（OpenCode/Codex 自动读取）
+cp $WIKI_VAULT/SCHEMA.md $WIKI_VAULT/AGENTS.md
+```
+
+#### Step 3: 注册工具 · Register Tools
+
+在你的 Agent 配置中注册 wiki 工具（具体格式取决于你的平台）：
+
+```yaml
+# 示例：工具注册配置
+tools:
+  - name: wiki_init
+    command: python <skill-path>/scripts/wiki_init.py --vault $WIKI_VAULT
+  - name: wiki_ingest
+    command: python <skill-path>/scripts/wiki_ingest.py --vault $WIKI_VAULT
+  - name: wiki_query
+    command: python <skill-path>/scripts/wiki_query.py --vault $WIKI_VAULT
+  - name: wiki_search
+    command: python <skill-path>/scripts/wiki_search.py --vault $WIKI_VAULT
+  - name: wiki_lint
+    command: python <skill-path>/scripts/wiki_lint.py --vault $WIKI_VAULT
+```
+
+#### Step 4: 开始使用 · Start Using
+
+```
+> Ingest this paper into my KB: https://arxiv.org/abs/2305.10601
+> What connections exist between RLHF and constitutional AI in my wiki?
+> Run lint and fix any issues
+```
+
+Agent 会读取 `AGENTS.md`，按照 wiki 约定执行操作。
+
+---
+
+### 🔵 Mira（字节跳动 AI 助手）
+
+Mira 运行在沙盒环境中，操作方式与本地 Agent 略有不同，但核心流程一致。额外的优势是可以直接导出到飞书文档。
+
+Mira runs in a sandboxed environment. The core workflow is the same, with the bonus of Feishu doc export.
+
+#### Step 1: 让 Mira 初始化知识库 · Ask Mira to Initialize
+
+直接对 Mira 说：
+
+```
+帮我初始化一个知识库，主题是"AI Agent 研究"
+```
+
+Mira 会在沙盒的 `workspace/` 中运行 `wiki_init.py`。
+
+> **持久化提示**：如果你希望知识库跨对话保留，让 Mira 把 vault 建在 `userdata/` 目录下：
+> ```
+> 帮我在 userdata 目录下初始化一个持久的知识库
+> ```
+
+#### Step 2: 导入素材 · Ingest Sources
+
+```
+把这篇文章加入我的知识库：https://lilianweng.github.io/posts/2023-06-23-agent/
+```
+
+Mira 会用内置的 `web_builtin_fetch` 工具抓取网页，通过 `wiki_ingest.py` 转为 Markdown，然后自动编译为 Wiki 页面。
+
+你也可以批量导入：
+```
+把这三篇文章都加入知识库：
+1. https://example.com/paper-1
+2. https://example.com/paper-2
+3. https://example.com/paper-3
+```
+
+#### Step 3: 查询和分析 · Query & Analyze
+
+```
+根据我的知识库，对比一下 RAG 和 Fine-tuning 的优劣势
+```
+
+```
+用我知识库里的内容，生成一份关于 Transformer 架构演进的 Marp 幻灯片
+```
+
+#### Step 4: 导出到飞书 · Export to Feishu
+
+Mira 独有的能力——把 wiki 内容导出为飞书文档，方便分享给团队：
+
+```
+把我知识库中关于 scaling laws 的综合分析导出到飞书文档
+```
+
+#### Step 5: 健康检查 · Health Check
+
+```
+检查一下我的知识库有没有问题，如果有就修复
+```
+
+#### Mira 特别注意事项 · Mira-Specific Notes
+
+| 事项 | 说明 |
+|------|------|
+| **Obsidian 查看** | 沙盒内无法直接用 Obsidian 打开。可下载 vault 文件到本地，或导出飞书文档查看 |
+| **搜索** | qmd 在沙盒中不可用，系统自动用 grep 回退搜索，对中小型 wiki 完全够用 |
+| **持久化** | `workspace/` 仅当次会话有效；使用 `userdata/` 目录可跨对话保留 |
+| **网络访问** | 通过 Mira 内置的 `web_builtin_fetch` 抓取网页，不受沙盒网络限制 |
+
+---
+
+### 🟡 其他 AI 助手 · Other AI Assistants
+
+如果你使用的是 Cursor、Windsurf、Aider 或其他带有文件系统访问能力的 AI 助手，通用步骤如下：
+
+If you use Cursor, Windsurf, Aider, or any AI assistant with filesystem access:
+
+#### 通用 3 步上手 · Universal 3-Step Setup
+
+**① 初始化 vault：**
+```bash
+git clone https://github.com/chengjialu8888/LLM-Wiki-KB.git
+python LLM-Wiki-KB/scripts/wiki_init.py ~/my-wiki --domain "My Research"
+```
+
+**② 让 AI 读取 SKILL.md：**
+
+把 `SKILL.md` 的内容粘贴到你的 AI 助手的系统 prompt、项目说明、或指令文件中。这是 LLM 理解整个 wiki 运作方式的核心文件。
+
+Paste the content of `SKILL.md` into your AI assistant's system prompt, project instructions, or instruction file. This is the core file that tells the LLM how the wiki works.
+
+**③ 开始对话：**
+```
+I've set up a wiki KB at ~/my-wiki. Please read the SKILL.md and help me ingest this article: <URL>
+```
+
+你的 AI 助手只要能运行 Python 和读写文件，就能驱动整个 wiki 工作流。`SKILL.md` 里包含了所有它需要知道的约定。
+
+Any AI assistant that can run Python and read/write files can drive the entire wiki workflow. `SKILL.md` contains everything it needs to know.
+
+---
+
+## ⚡ 快速命令速查 · Quick Command Reference
+
+| 操作 · Operation | 命令 · Command |
+|---|---|
+| 初始化 | `python scripts/wiki_init.py <vault> [--domain "领域"]` |
+| 导入 URL | `python scripts/wiki_ingest.py --vault <vault> --url <URL>` |
+| 导入本地文件 | `python scripts/wiki_ingest.py --vault <vault> --file <path>` |
+| 批量导入目录 | `python scripts/wiki_ingest.py --vault <vault> --dir <dir>` |
+| 搜索 | `python scripts/wiki_search.py --vault <vault> --query "关键词"` |
+| 查询（Markdown） | `python scripts/wiki_query.py --vault <vault> --query "问题"` |
+| 查询（幻灯片） | `python scripts/wiki_query.py --vault <vault> --query "主题" --format marp` |
+| 健康检查 | `python scripts/wiki_lint.py --vault <vault>` |
+| 健康检查 + 修复 | `python scripts/wiki_lint.py --vault <vault> --fix` |
+
+---
+
+## 🔍 搜索引擎 · Search Engine
+
+LLM Wiki KB 集成了 [qmd](https://github.com/tobi/qmd) 作为主力搜索引擎，支持 **BM25 + 向量混合检索**。同时提供优雅的降级方案：
+
+| 层级 · Tier | 引擎 · Engine | 场景 · When |
+|:---:|---|---|
+| 🥇 | **qmd** (hybrid BM25 + vector) | qmd 已安装时优先使用 |
+| 🥈 | **index.md 解析** | qmd 不可用，解析 wiki 目录 |
+| 🥉 | **grep 全文搜索** | 最终兜底，任何环境都能工作 |
+
+---
+
+## 🔌 平台适配器 · Platform Adapters
+
+| Platform | Schema File | Key Integration |
+|----------|-------------|-----------------|
+| **Claude Code** | `CLAUDE.md` | MCP server for qmd, native file access |
+| **OpenCode / Codex** | `AGENTS.md` | Tool registration YAML |
+| **Mira** | `SKILL.md` + sandbox | Feishu export, `web_builtin_fetch` |
+| **Cursor / Others** | `SKILL.md` (paste to system prompt) | Python + filesystem |
+
+每个适配器目录（`adapters/`）包含平台专属的配置说明和示例。
 
 ---
 
@@ -211,36 +460,12 @@ llm-wiki-kb/
 │   ├── obsidian-setup.md       # Obsidian 配置推荐
 │   └── karpathy-llm-wiki.md   # Karpathy 原始设计原则
 ├── adapters/
-│   ├── claude-code/            # Claude Code 适配器
-│   ├── opencode/               # OpenCode / Codex 适配器
-│   └── mira/                   # Mira 适配器
+│   ├── claude-code/            # Claude Code 适配器 (CLAUDE.md)
+│   ├── opencode/               # OpenCode / Codex 适配器 (AGENTS.md)
+│   └── mira/                   # Mira 适配器 (Feishu export)
 ├── LICENSE                     # MIT
 └── README.md                   # 📖 你正在读的这个文件
 ```
-
----
-
-## 🔍 搜索引擎 · Search Engine
-
-LLM Wiki KB 集成了 [qmd](https://github.com/tobi/qmd) 作为主力搜索引擎，支持 **BM25 + 向量混合检索**。同时提供优雅的降级方案：
-
-| 层级 · Tier | 引擎 · Engine | 场景 · When |
-|:---:|---|---|
-| 🥇 | **qmd** (hybrid BM25 + vector) | qmd 已安装时优先使用 |
-| 🥈 | **index.md 解析** | qmd 不可用，解析 wiki 目录 |
-| 🥉 | **grep 全文搜索** | 最终兜底，任何环境都能工作 |
-
----
-
-## 🔌 平台适配器 · Platform Adapters
-
-| Platform | Schema File | Config |
-|----------|-------------|--------|
-| **Claude Code** | `CLAUDE.md` | MCP server for qmd |
-| **OpenCode / Codex** | `AGENTS.md` | Tool registration YAML |
-| **Mira** | `SKILL.md` + sandbox | Feishu export, web fetch |
-
-每个适配器目录包含平台专属的配置说明和示例。
 
 ---
 
