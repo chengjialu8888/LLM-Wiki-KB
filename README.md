@@ -19,7 +19,7 @@
 
 ## 💡 灵感来源 · Inspiration
 
-2026 年 4 月，Andrej Karpathy 发布了一篇 [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)，提出了一个极具洞察力的观点：
+2025 年 4 月，Andrej Karpathy 发布了一篇 [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)，提出了一个极具洞察力的观点：
 
 > **RAG 每次都在重新推导答案，而 Wiki 把知识编译一次、复用无数次。**
 
@@ -29,7 +29,7 @@
 
 ---
 
-In April 2026, Andrej Karpathy published an [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with a brilliantly simple insight:
+In April 2025, Andrej Karpathy published an [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with a brilliantly simple insight:
 
 > **RAG re-derives answers every time. A Wiki compiles knowledge once and reuses it forever.**
 
@@ -79,29 +79,14 @@ Karpathy's Gist is a **design document**, not a **runnable system**. It describe
 <td><b>5 个 Python CLI 工具</b>：init / ingest / query / search / lint，共 1200+ 行生产级代码<br><i><b>5 Python CLI tools</b>, 1200+ lines of production code</i></td>
 </tr>
 <tr>
-<td><b>📥 素材获取</b><br>Ingestion</td>
-<td>提及"ingest"概念<br><i>Mentions "ingest" concept</i></td>
-<td><b>完整的 Web 抓取管线</b>：URL→Markdown 转换、图片本地化下载、批量目录导入、元数据提取<br><i><b>Full web scraping pipeline</b>: URL→Markdown, image localization, batch import, metadata extraction</i></td>
-</tr>
-<tr>
-<td><b>🔍 搜索能力</b><br>Search</td>
-<td>提及使用搜索<br><i>Mentions using search</i></td>
-<td><b>3 级搜索回退</b>：qmd（混合 BM25 + 向量检索）→ index.md 解析 → grep 兜底，任何环境都能工作<br><i><b>3-tier search fallback</b>: qmd (hybrid BM25 + vector) → index.md → grep</i></td>
-</tr>
-<tr>
-<td><b>📐 页面规范</b><br>Page Schema</td>
-<td>提及 page types 概念<br><i>Mentions page types concept</i></td>
-<td><b>5 种页面模板</b>（Source Summary / Entity / Concept / Comparison / Synthesis），每种含完整 YAML frontmatter schema<br><i><b>5 page templates</b> with full YAML frontmatter schemas</i></td>
-</tr>
-<tr>
-<td><b>🏥 质量保障</b><br>Quality Assurance</td>
-<td>提及 lint 概念<br><i>Mentions lint concept</i></td>
-<td><b>6 项自动化健康检查</b>：死链接、孤儿页、缺失 frontmatter、不完整 frontmatter、缺失 index、index 不一致<br><i><b>6 automated health checks</b>: broken links, orphan pages, missing/incomplete frontmatter, index consistency</i></td>
+<td><b>📄 页面类型</b><br>Page Types</td>
+<td>未指定<br><i>Not specified</i></td>
+<td><b>5 种结构化页面</b>：Source / Entity / Concept / Comparison / Synthesis<br><i><b>5 structured page types</b> with YAML frontmatter templates</i></td>
 </tr>
 <tr>
 <td><b>📊 输出格式</b><br>Output Formats</td>
 <td>Markdown 输出<br><i>Markdown output</i></td>
-<td><b>4 种输出格式</b>：Markdown / Marp 幻灯片 / Matplotlib 图表 / Obsidian Canvas<br><i><b>4 output formats</b>: Markdown / Marp slides / Charts / Canvas</i></td>
+<td><b>4 种输出格式</b>：Markdown / Marp 幻灯片 / 飞书文档 / Matplotlib 图表<br><i><b>4 output formats</b>: Markdown / Marp slides / Feishu / Charts</i></td>
 </tr>
 <tr>
 <td><b>🔌 平台适配</b><br>Platform Support</td>
@@ -119,6 +104,90 @@ Karpathy's Gist is a **design document**, not a **runnable system**. It describe
 <td><b>Obsidian 深度集成</b>：热重载、Dataview 查询、Web Clipper、Marp 预览<br><i><b>Deep Obsidian integration</b>: hot-reload, Dataview queries, Web Clipper, Marp preview</i></td>
 </tr>
 </table>
+
+---
+
+## 📚 5 种 Wiki 页面类型 · 5 Wiki Page Types
+
+LLM Wiki KB 定义了 **5 种结构化页面类型**，每种都有特定的 YAML frontmatter 模板和写作规范：
+
+### 1️⃣ Source Summary (`wiki/sources/`)
+每篇导入的来源文档对应一个页面，记录原始素材的关键信息。
+
+```yaml
+---
+title: "论文标题或文章名称"
+type: source
+author: "作者名称"
+date: "YYYY-MM-DD"
+url: "https://..."
+status: ingested | summarized | integrated
+topics: ["topic1", "topic2"]
+entities: ["[[Entity1]]", "[[Entity2]]"]
+concepts: ["[[Concept1]]", "[[Concept2]]"]
+---
+```
+
+### 2️⃣ Entity (`wiki/entities/`)
+实体页面记录具体的人、组织、产品、地点。
+
+```yaml
+---
+title: "实体名称"
+type: entity
+aliases: ["别名", "缩写"]
+category: person | organization | product | place | institution
+sources: ["source-id-1", "source-id-2"]
+---
+```
+
+### 3️⃣ Concept (`wiki/concepts/`)
+概念页面记录抽象的技术、理论、方法论。
+
+```yaml
+---
+title: "概念名称"
+type: concept
+aliases: ["别名"]
+sources: ["source-id-1", "source-id-2"]
+---
+```
+
+### 4️⃣ Comparison (`wiki/comparisons/`)
+对比分析页面，并排比较两个或多个实体/概念/来源。
+
+```yaml
+---
+title: "X vs Y"
+type: comparison
+subjects: ["[[X]]", "[[Y]]"]
+---
+```
+
+### 5️⃣ Synthesis (`wiki/synthesis/`)
+综合分析页面，将多个来源/实体/概念编织成跨主题的深度分析。
+
+```yaml
+---
+title: "综合分析标题"
+type: synthesis
+theme: "主题"
+sources: ["source-id-1", "source-id-2", "source-id-3"]
+---
+```
+
+---
+
+## 📤 导出功能 · Export Features
+
+Wiki 内容可以导出为多种格式，方便分享和演示：
+
+| 命令 | 输出格式 | 用途 |
+|------|----------|------|
+| `/wiki export feishu` | 飞书文档 | 团队协作、分享知识库 |
+| `/wiki export slides` | Marp 幻灯片 | 演讲、汇报、分享 |
+| `/wiki export report` | PDF / Markdown | 研究报告、论文附录 |
+| `/wiki export chart` | Matplotlib 图表 | 数据可视化、趋势分析 |
 
 ---
 
@@ -140,6 +209,10 @@ Karpathy's Gist is a **design document**, not a **runnable system**. It describe
 │  │ raw/ │→ │  wiki/    │→ │ output/ (md/marp/…)  │  │
 │  │      │  │ index.md  │  │                      │  │
 │  │      │  │ log.md    │  │                      │  │
+│  │      │  │ entities/ │  │                      │  │
+│  │      │  │ concepts/ │  │                      │  │
+│  │      │  │ sources/  │  │                      │  │
+│  │      │  │ synthesis/│  │                      │  │
 │  └──────┘  └──────────┘  └──────────────────────┘  │
 └─────────────────────────────────────────────────────┘
 ```
@@ -147,8 +220,13 @@ Karpathy's Gist is a **design document**, not a **runnable system**. It describe
 **三层数据流 · Three-Layer Data Flow:**
 
 1. **Raw（原始素材）** — URL 或本地文件经 `wiki_ingest.py` 转为 Markdown，存入 `raw/`
-2. **Wiki（知识编译）** — LLM 阅读原始素材，按模板编写 Wiki 页面，存入 `wiki/`，更新 `index.md` 和 `log.md`
-3. **Output（输出制品）** — `wiki_query.py` 生成 Markdown、幻灯片、图表或 Canvas
+2. **Wiki（知识编译）** — LLM 阅读原始素材，按 5 种页面类型模板编写 Wiki 页面，存入 `wiki/`，更新 `index.md` 和 `log.md`
+3. **Output（输出制品）** — 通过 export 命令生成 Markdown、幻灯片、飞书文档或图表
+
+**自动维护的索引文件 · Auto-Maintained Indices:**
+- `wiki/index.md` — 主索引，包含所有页面的别名映射
+- `wiki/_backlinks.json` — 反向链接索引
+- `wiki/_absorb_log.json` — 吸收日志，记录哪些条目已被处理
 
 ---
 
@@ -198,312 +276,228 @@ cp $WIKI_VAULT/SCHEMA.md $WIKI_VAULT/CLAUDE.md
 ```bash
 # 安装 qmd
 go install github.com/tobi/qmd@latest
-
-# 在项目根目录创建 .mcp.json
-cat > $WIKI_VAULT/.mcp.json << 'EOF'
-{
-  "mcpServers": {
-    "qmd": {
-      "command": "qmd",
-      "args": ["serve", "--dir", "wiki/"]
-    }
-  }
-}
-EOF
 ```
 
-没有 qmd 也完全没问题——系统会自动回退到 index.md 解析 + grep 搜索。
+#### Step 5: 开始使用 · Start Using
 
-#### Step 5: 在 Claude Code 中使用 · Start Using
+在 Claude Code 中输入：
 
-打开 Claude Code，进入 vault 目录，然后直接用自然语言指挥：
-
-```bash
-cd $WIKI_VAULT
-claude  # 启动 Claude Code
 ```
-
-**导入素材：**
+/wiki ingest https://example.com/article
+/wiki absorb all
+/wiki export slides
 ```
-> 把这篇文章加入我的知识库：https://lilianweng.github.io/posts/2023-06-23-agent/
-```
-
-**查询知识：**
-```
-> 我的知识库里关于 LLM Agent 架构有哪些研究？帮我做一个综合分析
-```
-
-**生成幻灯片：**
-```
-> 把 scaling laws 的相关内容整理成一份 Marp 幻灯片
-```
-
-**健康检查：**
-```
-> 检查一下 wiki 有没有死链接或孤儿页面
-```
-
-Claude Code 会自动阅读 `CLAUDE.md`，理解整个 wiki 的约定，执行相应的 Python 脚本，并维护 `index.md`、`log.md` 和 `[[wikilinks]]`。
 
 ---
 
-### 🟢 OpenCode / Codex / 其他 OpenAI 系 Agent
+### 🟢 OpenCode (OpenClaw)
 
-OpenCode 和 Codex 使用 `AGENTS.md` 作为项目指令文件，工作流与 Claude Code 类似。
+OpenCode 使用 `AGENTS.md` 作为项目级指令文件，概念与 `CLAUDE.md` 类似。
 
-OpenCode and Codex use `AGENTS.md` as the project instruction file. The workflow is similar to Claude Code.
+OpenCode uses `AGENTS.md` as the project-level instruction file, similar to `CLAUDE.md`.
 
-#### Step 1: Clone 并设置环境 · Clone & Setup
+#### Step 1: Clone 并设置环境变量 · Clone & Set Env
 
 ```bash
 git clone https://github.com/chengjialu8888/LLM-Wiki-KB.git
 cd LLM-Wiki-KB
+
 export WIKI_VAULT=~/obsidian-vaults/my-research
 ```
 
-#### Step 2: 初始化并部署 Schema · Initialize & Deploy
+#### Step 2: 初始化 Wiki · Initialize
 
 ```bash
 python scripts/wiki_init.py $WIKI_VAULT --domain "你的研究领域"
-
-# 复制为 AGENTS.md（OpenCode/Codex 自动读取）
-cp $WIKI_VAULT/SCHEMA.md $WIKI_VAULT/AGENTS.md
 ```
 
-#### Step 3: 注册工具 · Register Tools
+#### Step 3: 部署 Schema 到 OpenCode · Deploy Schema
 
-在你的 Agent 配置中注册 wiki 工具（具体格式取决于你的平台）：
-
-```yaml
-# 示例：工具注册配置
-tools:
-  - name: wiki_init
-    command: python <skill-path>/scripts/wiki_init.py --vault $WIKI_VAULT
-  - name: wiki_ingest
-    command: python <skill-path>/scripts/wiki_ingest.py --vault $WIKI_VAULT
-  - name: wiki_query
-    command: python <skill-path>/scripts/wiki_query.py --vault $WIKI_VAULT
-  - name: wiki_search
-    command: python <skill-path>/scripts/wiki_search.py --vault $WIKI_VAULT
-  - name: wiki_lint
-    command: python <skill-path>/scripts/wiki_lint.py --vault $WIKI_VAULT
+```bash
+# 将 schema 复制为 AGENTS.md（OpenCode 自动读取此文件）
+cp $WIKI_VAULT/SCHEMA.md $WIKI_VAULT/AGENTS.md
 ```
 
 #### Step 4: 开始使用 · Start Using
 
-```
-> Ingest this paper into my KB: https://arxiv.org/abs/2305.10601
-> What connections exist between RLHF and constitutional AI in my wiki?
-> Run lint and fix any issues
-```
+在 OpenCode 中输入：
 
-Agent 会读取 `AGENTS.md`，按照 wiki 约定执行操作。
+```
+/wiki ingest https://example.com/article
+/wiki absorb last 30 days
+/wiki query "这个领域的主要趋势是什么？"
+```
 
 ---
 
-### 🔵 Mira（字节跳动 AI 助手）
+### 🔵 Mira (字节跳动内部 AI 助手)
 
-Mira 运行在沙盒环境中，操作方式与本地 Agent 略有不同，但核心流程一致。额外的优势是可以直接导出到飞书文档。
+Mira 是字节跳动内部的 AI 助手平台。本 Skill 已适配 Mira 的沙盒环境和工具集。
 
-Mira runs in a sandboxed environment. The core workflow is the same, with the bonus of Feishu doc export.
+Mira is ByteDance's internal AI assistant platform. This skill is adapted for Mira's sandbox environment and toolset.
 
-#### Step 1: 让 Mira 初始化知识库 · Ask Mira to Initialize
+#### Step 1: 确认 Skill 已安装 · Verify Skill Installation
 
-直接对 Mira 说：
-
+Mira Skill 应该已经安装在：
 ```
-帮我初始化一个知识库，主题是"AI Agent 研究"
-```
-
-Mira 会在沙盒的 `workspace/` 中运行 `wiki_init.py`。
-
-> **持久化提示**：如果你希望知识库跨对话保留，让 Mira 把 vault 建在 `userdata/` 目录下：
-> ```
-> 帮我在 userdata 目录下初始化一个持久的知识库
-> ```
-
-#### Step 2: 导入素材 · Ingest Sources
-
-```
-把这篇文章加入我的知识库：https://lilianweng.github.io/posts/2023-06-23-agent/
+/opt/tiger/mira_nas/plugins/prod/<your-user-id>/skills/llm-wiki-kb/
 ```
 
-Mira 会用内置的 `web_builtin_fetch` 工具抓取网页，通过 `wiki_ingest.py` 转为 Markdown，然后自动编译为 Wiki 页面。
+包含：`SKILL.md`、`scripts/`、`references/`
 
-你也可以批量导入：
-```
-把这三篇文章都加入知识库：
-1. https://example.com/paper-1
-2. https://example.com/paper-2
-3. https://example.com/paper-3
-```
+#### Step 2: 初始化 Wiki（选择一种方式）· Initialize Wiki
 
-#### Step 3: 查询和分析 · Query & Analyze
-
-```
-根据我的知识库，对比一下 RAG 和 Fine-tuning 的优劣势
+**方式 A：当次会话使用（workspace）**
+```bash
+python /opt/tiger/mira_nas/plugins/prod/<your-user-id>/skills/llm-wiki-kb/scripts/wiki_init.py workspace/my-wiki --domain "AI Agent 研究"
 ```
 
-```
-用我知识库里的内容，生成一份关于 Transformer 架构演进的 Marp 幻灯片
-```
-
-#### Step 4: 导出到飞书 · Export to Feishu
-
-Mira 独有的能力——把 wiki 内容导出为飞书文档，方便分享给团队：
-
-```
-把我知识库中关于 scaling laws 的综合分析导出到飞书文档
+**方式 B：跨会话持久化（userdata）**
+```bash
+python /opt/tiger/mira_nas/plugins/prod/<your-user-id>/skills/llm-wiki-kb/scripts/wiki_init.py userdata/my-wiki --domain "AI Agent 研究"
 ```
 
-#### Step 5: 健康检查 · Health Check
+区别：
+- `workspace/` — 当前会话有效，会话结束后清理
+- `userdata/` — 跨会话持久保存，适合长期知识库
+
+#### Step 3: 开始使用 · Start Using
+
+在 Mira 对话中直接输入：
 
 ```
-检查一下我的知识库有没有问题，如果有就修复
+把这篇文章加入我的知识库：https://example.com/article
 ```
 
-#### Mira 特别注意事项 · Mira-Specific Notes
+或：
 
-| 事项 | 说明 |
-|------|------|
-| **Obsidian 查看** | 沙盒内无法直接用 Obsidian 打开。可下载 vault 文件到本地，或导出飞书文档查看 |
-| **搜索** | qmd 在沙盒中不可用，系统自动用 grep 回退搜索，对中小型 wiki 完全够用 |
-| **持久化** | `workspace/` 仅当次会话有效；使用 `userdata/` 目录可跨对话保留 |
-| **网络访问** | 通过 Mira 内置的 `web_builtin_fetch` 抓取网页，不受沙盒网络限制 |
+```
+/wiki ingest https://example.com/article
+/wiki absorb all
+/wiki export feishu  # 导出到飞书文档
+```
+
+#### Mira 环境注意事项 · Mira-Specific Notes
+
+| 特性 | Mira 适配 |
+|------|----------|
+| 搜索 | 默认使用 grep + index.md（qmd 在沙盒中不可用） |
+| 导出 | 支持飞书文档导出（使用 `upload_to_feishu_tool`） |
+| 路径 | 使用 `workspace/` 或 `userdata/` 相对路径 |
+| 持久化 | 只有 `userdata/` 下的内容会保留 |
 
 ---
 
-### 🟡 其他 AI 助手 · Other AI Assistants
+### ⚪ 其他 AI 助手 / Generic AI Assistants
 
-如果你使用的是 Cursor、Windsurf、Aider 或其他带有文件系统访问能力的 AI 助手，通用步骤如下：
+对于其他支持 skill 的 AI 助手（Cursor、Windsurf、GitHub Copilot Chat 等），遵循以下通用步骤：
 
-If you use Cursor, Windsurf, Aider, or any AI assistant with filesystem access:
+For other AI assistants that support skills (Cursor, Windsurf, GitHub Copilot Chat, etc.), follow these general steps:
 
-#### 通用 3 步上手 · Universal 3-Step Setup
+#### Step 1: Clone
 
-**① 初始化 vault：**
 ```bash
 git clone https://github.com/chengjialu8888/LLM-Wiki-KB.git
-python LLM-Wiki-KB/scripts/wiki_init.py ~/my-wiki --domain "My Research"
 ```
 
-**② 让 AI 读取 SKILL.md：**
+#### Step 2: 复制 SKILL.md · Copy SKILL.md
 
-把 `SKILL.md` 的内容粘贴到你的 AI 助手的系统 prompt、项目说明、或指令文件中。这是 LLM 理解整个 wiki 运作方式的核心文件。
+将 `SKILL.md` 的内容复制到你的 AI 助手对话中，或保存为项目级指令文件（具体文件名取决于平台）。
 
-Paste the content of `SKILL.md` into your AI assistant's system prompt, project instructions, or instruction file. This is the core file that tells the LLM how the wiki works.
+Copy the contents of `SKILL.md` into your AI assistant conversation, or save it as a project-level instruction file (filename depends on the platform).
 
-**③ 开始对话：**
+#### Step 3: 初始化并运行 · Initialize & Run
+
+```bash
+python scripts/wiki_init.py ./my-wiki --domain "你的研究领域"
 ```
-I've set up a wiki KB at ~/my-wiki. Please read the SKILL.md and help me ingest this article: <URL>
-```
 
-你的 AI 助手只要能运行 Python 和读写文件，就能驱动整个 wiki 工作流。`SKILL.md` 里包含了所有它需要知道的约定。
-
-Any AI assistant that can run Python and read/write files can drive the entire wiki workflow. `SKILL.md` contains everything it needs to know.
-
----
-
-## ⚡ 快速命令速查 · Quick Command Reference
-
-| 操作 · Operation | 命令 · Command |
-|---|---|
-| 初始化 | `python scripts/wiki_init.py <vault> [--domain "领域"]` |
-| 导入 URL | `python scripts/wiki_ingest.py --vault <vault> --url <URL>` |
-| 导入本地文件 | `python scripts/wiki_ingest.py --vault <vault> --file <path>` |
-| 批量导入目录 | `python scripts/wiki_ingest.py --vault <vault> --dir <dir>` |
-| 搜索 | `python scripts/wiki_search.py --vault <vault> --query "关键词"` |
-| 查询（Markdown） | `python scripts/wiki_query.py --vault <vault> --query "问题"` |
-| 查询（幻灯片） | `python scripts/wiki_query.py --vault <vault> --query "主题" --format marp` |
-| 健康检查 | `python scripts/wiki_lint.py --vault <vault>` |
-| 健康检查 + 修复 | `python scripts/wiki_lint.py --vault <vault> --fix` |
-
----
-
-## 🔍 搜索引擎 · Search Engine
-
-LLM Wiki KB 集成了 [qmd](https://github.com/tobi/qmd) 作为主力搜索引擎，支持 **BM25 + 向量混合检索**。同时提供优雅的降级方案：
-
-| 层级 · Tier | 引擎 · Engine | 场景 · When |
-|:---:|---|---|
-| 🥇 | **qmd** (hybrid BM25 + vector) | qmd 已安装时优先使用 |
-| 🥈 | **index.md 解析** | qmd 不可用，解析 wiki 目录 |
-| 🥉 | **grep 全文搜索** | 最终兜底，任何环境都能工作 |
-
----
-
-## 🔌 平台适配器 · Platform Adapters
-
-| Platform | Schema File | Key Integration |
-|----------|-------------|-----------------|
-| **Claude Code** | `CLAUDE.md` | MCP server for qmd, native file access |
-| **OpenCode / Codex** | `AGENTS.md` | Tool registration YAML |
-| **Mira** | `SKILL.md` + sandbox | Feishu export, `web_builtin_fetch` |
-| **Cursor / Others** | `SKILL.md` (paste to system prompt) | Python + filesystem |
-
-每个适配器目录（`adapters/`）包含平台专属的配置说明和示例。
-
----
-
-## 📂 项目结构 · Project Structure
+然后在对话中：
 
 ```
-llm-wiki-kb/
-├── SKILL.md                    # 🧠 核心技能定义 (LLM reads this)
-├── scripts/
-│   ├── wiki_init.py            # 初始化 vault
-│   ├── wiki_ingest.py          # 素材导入（URL / 本地文件）
-│   ├── wiki_query.py           # 查询与多格式输出
-│   ├── wiki_search.py          # 搜索（qmd / index / grep）
-│   └── wiki_lint.py            # 健康检查（6 项自动化检测）
-├── references/
-│   ├── page-templates.md       # 5 种页面模板
-│   ├── schema-template.md      # SCHEMA.md 生成模板
-│   ├── qmd-integration.md      # qmd 搜索引擎集成指南
-│   ├── obsidian-setup.md       # Obsidian 配置推荐
-│   └── karpathy-llm-wiki.md   # Karpathy 原始设计原则
-├── adapters/
-│   ├── claude-code/            # Claude Code 适配器 (CLAUDE.md)
-│   ├── opencode/               # OpenCode / Codex 适配器 (AGENTS.md)
-│   └── mira/                   # Mira 适配器 (Feishu export)
-├── LICENSE                     # MIT
-└── README.md                   # 📖 你正在读的这个文件
+/wiki ingest https://example.com/article
+/wiki absorb all
 ```
 
 ---
 
-## 🧪 Testing
+## 🛠 快速命令参考 · Quick Command Reference
 
-```
-✅ 35/35 tests passing
-
-Module                    Tests    Status
-─────────────────────────────────────────
-wiki_init.py              5        ✅ All pass
-wiki_ingest.py (file)     5        ✅ All pass
-wiki_ingest.py (URL)      5        ✅ All pass
-wiki_query.py             5        ✅ All pass
-wiki_search.py            5        ✅ All pass
-wiki_lint.py              5        ✅ All pass
-Integration               5        ✅ All pass
-```
+| 命令 | 功能 | 示例 |
+|------|------|------|
+| `/wiki ingest <url/file>` | 导入素材 | `/wiki ingest https://paper.com/llm.pdf` |
+| `/wiki ingest --batch <dir>` | 批量导入 | `/wiki ingest --batch ./downloads/` |
+| `/wiki absorb [range]` | 吸收条目到 Wiki | `/wiki absorb last 30 days` |
+| `/wiki query "<q>"` | 查询知识库 | `/wiki query "LLM 推理优化方法"` |
+| `/wiki search "<term>"` | 全文搜索 | `/wiki search "transformer"` |
+| `/wiki lint` | 健康检查 | `/wiki lint --fix` |
+| `/wiki export feishu` | 导出飞书文档 | `/wiki export feishu` |
+| `/wiki export slides` | 导出 Marp 幻灯片 | `/wiki export slides` |
+| `/wiki export report` | 导出研究报告 | `/wiki export report` |
+| `/wiki status` | 查看统计 | `/wiki status` |
 
 ---
 
-## 🙏 致谢 · Acknowledgments
+## 🔍 搜索能力层级 · Search Capability Tiers
 
-- **[Andrej Karpathy](https://x.com/karpathy)** — LLM Wiki 理念的提出者。本项目站在巨人的肩膀上。
-- **[qmd](https://github.com/tobi/qmd)** by Tobias Lütke — 优雅的本地 Markdown 混合搜索引擎。
-- **[Obsidian](https://obsidian.md)** — 让 Wiki 可视化变得如此自然。
+| 层级 | 工具 | 能力 | 适用场景 |
+|------|------|------|----------|
+| Tier 1 | `wiki_search.py` + grep | 全文搜索、标签过滤 | 中小型 Wiki (<100 篇) |
+| Tier 2 | `wiki_search.py` + qmd | 混合搜索（BM25 + 向量） | 大型 Wiki (100-1000 篇) |
+| Tier 3 | `wiki_query.py` | LLM 语义导航 | 复杂查询、综合分析 |
+
+---
+
+## 🧪 测试 · Testing
+
+本 Skill 包含 35 项端到端测试，覆盖 7 个核心模块：
+
+```bash
+cd LLM-Wiki-KB
+pytest tests/ -v
+
+# 或运行特定测试
+pytest tests/test_wiki_ingest.py -v
+pytest tests/test_wiki_query.py -v
+```
+
+**测试覆盖模块：**
+- `wiki_init.py` — Vault 初始化
+- `wiki_ingest.py` — 素材导入（URL、文件、批量）
+- `wiki_query.py` — 语义查询
+- `wiki_search.py` — 全文搜索
+- `wiki_lint.py` — 健康检查
+- `wiki_export.py` — 导出功能
+- `SKILL.md` — Schema 解析
+
+---
+
+## 🤝 与其他 Skill 的关系 · Relationship to Other Skills
+
+| Skill | 关系 | 区别 |
+|-------|------|------|
+| **farzaa/wiki** (Gist) | **灵感来源** | 本 Skill 的架构基础，但原版是设计文档 |
+| **LLM-Wiki-KB** (本 Skill) | **生产实现** | 完整的 CLI 工具链 + 5 种页面类型 + 多平台适配 |
+
+本 Skill 可以看作是 **farzaa/wiki Gist 的生产级实现**，增加了：
+- 可执行的 Python CLI 工具
+- 5 种结构化的页面类型模板
+- 导出到飞书/Marp/图表的功能
+- 跨平台适配器（Claude Code / OpenCode / Mira）
+- 35 项端到端测试
+
+---
+
+## 📄 许可证 · License
+
+[MIT](LICENSE) © 2025 chengjialu8888
 
 ---
 
 <div align="center">
 
-**从一条推文到一个工具链 · From a tweet to a toolkit**
+**如果这个项目对你有帮助，请给它一个 ⭐️**
 
-*"The best way to understand an idea is to build it."*
-
-[⭐ Star this repo](https://github.com/chengjialu8888/LLM-Wiki-KB) if you find it useful!
+**If this project helps you, please give it a ⭐️**
 
 </div>
