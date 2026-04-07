@@ -16,7 +16,7 @@
 
 ## 💡 灵感来源 · Inspiration
 
-2025 年 6 月，Andrej Karpathy 发布了一篇 [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)，提出了一个极具洞察力的观点：
+2026 年 4 月，Andrej Karpathy 发布了一篇 [LLM Wiki Gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)，提出了一个极具洞察力的观点：
 
 > **RAG 每次都在重新推导答案，而 Wiki 把知识编译一次、复用无数次。**
 
