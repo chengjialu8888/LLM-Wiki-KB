@@ -1,5 +1,8 @@
 <div align="center">
 
+<img src="https://p-mira-img-sign-sgnontt.byteintl.net/tos-mya-i-xobrcjvdq7/a4e1062c41d341c48e793da47dfd090e.jpg~tplv-xobrcjvdq7-image-jpeg.jpeg?lk3s=3523e930&x-orig-authkey=miraorigin&x-orig-expires=1776171600&x-orig-sign=5Sch%2F%2BRC5QiJxmPvydMPAGYpTPc%3D" width="100%" alt="LLM Wiki KB Banner" style="max-width: 1280px; aspect-ratio: 16/9; object-fit: cover;">
+
+
 # 🧠 LLM Wiki KB
 
 **让 LLM 像人类专家一样，把零散知识编译成一部不断生长的百科全书**
